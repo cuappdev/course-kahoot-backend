@@ -38,7 +38,7 @@ def calculate_scores(students, filename):
         for student in students:
             if net_id == student.net_id:
                 score = row[2]
-                student.score += score
+                student.score += int(score)
     return students
 
 def get_kahoot_leaderboard():
@@ -47,7 +47,12 @@ def get_kahoot_leaderboard():
         if filename.endswith("xlsx") and not filename.startswith("~$"):
             students = calculate_scores(students, filename)
     leaderboard = sorted(students, key=lambda student: -student.score)
-    return [student.serialize() for student in leaderboard]
+    output = []
+    for i in range(len(leaderboard)):
+        student = leaderboard[i].serialize()
+        student["rank"] = i + 1
+        output.append(student)
+    return output
 
 def get_attendance():
     attendance = {}
@@ -60,7 +65,9 @@ def get_attendance():
             for index, row in df1.iterrows():
                 net_id = str(row[1]).lower()
                 if not net_id in attendance:
-                    attendance[net_id] = int((1 / lecture_num) * 100)
+                    attendance[net_id] = 1
                 else:
-                    attendance[net_id] = int(((attendance[net_id] + 1) / lecture_num) * 100)
+                    attendance[net_id] = attendance[net_id] + 1
+    for i in attendance.keys():
+        attendance[i] = int(attendance[i] / lecture_num * 100)
     return attendance
