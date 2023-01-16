@@ -41,11 +41,17 @@ def calculate_scores(students, filename):
                 student.score += int(score)
     return students
 
-def get_kahoot_leaderboard():
+def get_kahoot_leaderboard(week_id=None):
     students = create_students()
     for filename in os.listdir("."):
-        if filename.endswith("xlsx") and not filename.startswith("~$"):
-            students = calculate_scores(students, filename)
+        if week_id:
+            if filename.endswith("xlsx") and \
+                ((int(filename[filename.index("lecture") + 7:filename.index(".xlsx")]) + 1) // 2 == week_id) and \
+                not filename.startswith("~$"):
+                    students = calculate_scores(students, filename)
+        else:
+            if filename.endswith("xlsx") and not filename.startswith("~$"):
+                students = calculate_scores(students, filename)
     leaderboard = sorted(students, key=lambda student: -student.score)
     output = []
     for i in range(len(leaderboard)):

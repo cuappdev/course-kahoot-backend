@@ -20,6 +20,12 @@ def get_leaderboard():
         "kahoot_scores": scores,
     }})
 
+@app.route("/leaderboard/<int:week_id>")
+def get_weekly_leaderboard(week_id):
+    return json.dumps({"success": True, "data": {
+        "kahoot_scores": get_kahoot_leaderboard(week_id),
+    }})
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
